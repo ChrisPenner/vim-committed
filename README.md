@@ -44,6 +44,10 @@ Here's the default configuration:
   " So for instance the first notice is at 5 minutes, 
   " then 10, then 20, then 40, etc.
   let g:committed_min_time_threshold = 5
+
+  " A notification won't be triggered unless at least this many lines
+  " have been changed.
+  let g:committed_lines_threshold = 15
 ```
 
 ## Known Issues

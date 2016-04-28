@@ -3,20 +3,29 @@
 " Version:      0.1
 " License:      MIT
 
-" Bail if we don't have git.
-if !executable("git") || !executable("date")
+if exists("g:loaded_committed") || v:version < 700
+  finish
+endif
+let g:loaded_committed = 1
+
+" Bail if we don't have the required executables
+if !executable("git") || !executable("date") || !executable("head") || !executable("tr")
     finish
 endif
 
 let s:has_reattach = executable("reattach-to-user-namespace")
 
 " Set up defaults
-if !exists("g:committed_min_time_threshold")
-  let g:committed_min_time_threshold = 5
+if !exists("g:committed_time_threshold")
+  let g:committed_time_threshold = 5
 endif
 
-if !exists("g:current_time_threshold")
-    let g:current_time_threshold = g:committed_min_time_threshold
+if !exists("g:committed_lines_threshold")
+  let g:committed_lines_threshold = 15
+endif
+
+if !exists("g:committed_current_threshold")
+    let g:committed_current_threshold = g:committed_time_threshold
 endif
 
 " Send notification via applescript
@@ -30,8 +39,18 @@ function! s:Notify(message)
     silent execute command
 endfunction
 
+function! s:GetLinesChanged()
+    return system("git diff --stat | head -n1 | tr -dC '[:digit:]'")
+endfunction
+
 " Determine whether to send a notification for the current repo
 function! s:CheckIfNotify()
+    " Bail if not enough lines have been changed
+    let lines_changed = s:GetLinesChanged()
+    if lines_changed < g:committed_lines_threshold
+        return
+    endif
+
     " Collect info about the current repo
     let now = system("date +%s")
     let last_commit = system("git log --pretty=format:%at -1 2> /dev/null")
@@ -43,26 +62,26 @@ function! s:CheckIfNotify()
     let minutes_since_last_commit = seconds_since_last_commit / 60
     let hours_since_last_commit = minutes_since_last_commit / 60
 
-    " echom "thresh: " . g:current_time_threshold
+    " echom "thresh: " . g:committed_current_threshold
     " echom "minutes since: " . minutes_since_last_commit
 
     " If this matches, there must be a new commit.
-    if minutes_since_last_commit < (g:current_time_threshold / 2)
-        let g:current_time_threshold = g:committed_min_time_threshold
-        if minutes_since_last_commit < g:current_time_threshold
+    if minutes_since_last_commit < (g:committed_current_threshold / 2)
+        let g:committed_current_threshold = g:committed_time_threshold
+        if minutes_since_last_commit < g:committed_current_threshold
             return
         else
-            while minutes_since_last_commit >= g:current_time_threshold
-                let g:current_time_threshold = 2 * g:current_time_threshold
+            while minutes_since_last_commit >= g:committed_current_threshold
+                let g:committed_current_threshold = 2 * g:committed_current_threshold
             endwhile
         endif
     " If we're still within the threshold don't send another notification
-    elseif minutes_since_last_commit < g:current_time_threshold
+    elseif minutes_since_last_commit < g:committed_current_threshold
         return
     else
         " If we reach here, we're past the threshold, bump it up
-        while minutes_since_last_commit >= g:current_time_threshold
-            let g:current_time_threshold = 2 * g:current_time_threshold
+        while minutes_since_last_commit >= g:committed_current_threshold
+            let g:committed_current_threshold = 2 * g:committed_current_threshold
         endwhile
     endif
 
