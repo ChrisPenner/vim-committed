@@ -5,6 +5,8 @@ time. To keep from being annoying, consecutive reminder messages are shown with
 an exponential backoff. See the section on configuration to choose your
 threshold settings.
 
+![Committed Example Image](/doc/committed.png)
+
 ## Installation
 
 Committed may be installed directly from Github. It's recommended to use a
