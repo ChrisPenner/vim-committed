@@ -27,6 +27,7 @@ function! s:Notify(message)
     else
         let command='! osascript -e ''display notification "' . a:message . '" with title "Commit\!"'''
     endif
+    silent execute command
 endfunction
 
 " Determine whether to send a notification for the current repo
@@ -51,7 +52,7 @@ function! s:CheckIfNotify()
         if minutes_since_last_commit < g:current_time_threshold
             return
         else
-            while minutes_since_last_commit > g:current_time_threshold
+            while minutes_since_last_commit >= g:current_time_threshold
                 let g:current_time_threshold = 2 * g:current_time_threshold
             endwhile
         endif
@@ -60,7 +61,7 @@ function! s:CheckIfNotify()
         return
     else
         " If we reach here, we're past the threshold, bump it up
-        while minutes_since_last_commit > g:current_time_threshold
+        while minutes_since_last_commit >= g:current_time_threshold
             let g:current_time_threshold = 2 * g:current_time_threshold
         endwhile
     endif
@@ -75,7 +76,5 @@ endfunction
 
 augroup CommittedCheck
   autocmd!
-  autocmd BufWritePost * call s:CheckIfNotify()
+  autocmd BufWritePost * silent call s:CheckIfNotify()
 augroup END
-
-silent call s:CheckIfNotify()
