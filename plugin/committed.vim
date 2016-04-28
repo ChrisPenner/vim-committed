@@ -7,6 +7,7 @@ if exists("g:loaded_committed") || v:version < 700
   finish
 endif
 let g:loaded_committed = 1
+let s:thresholds = {}
 
 " Bail if we don't have the required executables
 if !executable("git") || !executable("date") || !executable("head") || !executable("tr")
@@ -22,10 +23,6 @@ endif
 
 if !exists("g:committed_lines_threshold")
   let g:committed_lines_threshold = 15
-endif
-
-if !exists("g:committed_current_threshold")
-    let g:committed_current_threshold = g:committed_time_threshold
 endif
 
 " Send notification via applescript
@@ -51,6 +48,12 @@ function! s:CheckIfNotify()
         return
     endif
 
+    " Use a different threshold for each repo
+    let repo_path = system("git rev-parse --show-toplevel")
+    if !has_key(s:thresholds, repo_path)
+        let s:thresholds[repo_path] = g:committed_time_threshold
+    endif
+
     " Collect info about the current repo
     let now = system("date +%s")
     let last_commit = system("git log --pretty=format:%at -1 2> /dev/null")
@@ -62,26 +65,26 @@ function! s:CheckIfNotify()
     let minutes_since_last_commit = seconds_since_last_commit / 60
     let hours_since_last_commit = minutes_since_last_commit / 60
 
-    " echom "thresh: " . g:committed_current_threshold
+    " echom "thresh: " . s:thresholds[repo_path]
     " echom "minutes since: " . minutes_since_last_commit
 
     " If this matches, there must be a new commit.
-    if minutes_since_last_commit < (g:committed_current_threshold / 2)
-        let g:committed_current_threshold = g:committed_time_threshold
-        if minutes_since_last_commit < g:committed_current_threshold
+    if minutes_since_last_commit < (s:thresholds[repo_path] / 2)
+        let s:thresholds[repo_path] = g:committed_time_threshold
+        if minutes_since_last_commit < threshold
             return
         else
-            while minutes_since_last_commit >= g:committed_current_threshold
-                let g:committed_current_threshold = 2 * g:committed_current_threshold
+            while minutes_since_last_commit >= s:thresholds[repo_path]
+                let  s:thresholds[repo_path] = 2 * s:thresholds[repo_path]
             endwhile
         endif
     " If we're still within the threshold don't send another notification
-    elseif minutes_since_last_commit < g:committed_current_threshold
+    elseif minutes_since_last_commit < s:thresholds[repo_path]
         return
     else
         " If we reach here, we're past the threshold, bump it up
-        while minutes_since_last_commit >= g:committed_current_threshold
-            let g:committed_current_threshold = 2 * g:committed_current_threshold
+        while minutes_since_last_commit >= s:thresholds[repo_path]
+            let s:thresholds[repo_path] = 2 * s:thresholds[repo_path]
         endwhile
     endif
 

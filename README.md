@@ -57,8 +57,5 @@ need to install an additional tool. With homebrew you can run:
   brew install reattach-to-user-namespace
 ```
 
-Currently the plugin only keeps state for the current repo and will get
-confused if switching directories (in vim) between multiple git repos.
-
 ## Bug Reports
 Please report any bugs encountered as issues on Github.
