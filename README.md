@@ -34,6 +34,15 @@ Run the following command:
     git clone git://github.com/ChrisPenner/vim-committed.git
 ```
 
+## Commands
+
+Use the following commands to enable/disable/toggle the plugin.
+```vim
+    :CommittedDisable
+    :CommittedEnable
+    :CommittedToggle
+```
+
 ## Configuration
 There are a few configurable parameters to tune operation to your needs.
 
@@ -41,7 +50,7 @@ Here's the default configuration:
 ```vim
   " Start alerting after 5 minutes without a commit.
   " The threshold doubles each time it occurs
-  " So for instance the first notice is at 5 minutes, 
+  " So for instance the first notice is at 5 minutes,
   " then 10, then 20, then 40, etc.
   let g:committed_min_time_threshold = 5
 

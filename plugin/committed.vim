@@ -7,10 +7,9 @@ if exists("g:loaded_committed") || v:version < 700
   finish
 endif
 let g:loaded_committed = 1
-let s:thresholds = {}
 
 " Bail if we don't have the required executables
-if !executable("git") || !executable("date") || !executable("head") || !executable("tr")
+if !executable("git") || !executable("date") || !executable("head") || !executable("tr") || !executable("cut")
     finish
 endif
 
@@ -25,6 +24,13 @@ if !exists("g:committed_lines_threshold")
   let g:committed_lines_threshold = 15
 endif
 
+if !exists("g:committed_enable_at_startup")
+  let g:committed_enable_at_startup = 1
+endif
+
+let s:enabled = g:committed_enable_at_startup
+let s:thresholds = {}
+
 " Send notification via applescript
 function! s:Notify(message)
     " Fix for display notifications not working in tmux
@@ -37,11 +43,15 @@ function! s:Notify(message)
 endfunction
 
 function! s:GetLinesChanged()
-    return system("git diff --stat | head -n1 | tr -dC '[:digit:]'")
+    return system("git diff --stat | tail -n1 | cut -f2 -d, | tr -dC '[:digit:]'")
 endfunction
 
 " Determine whether to send a notification for the current repo
 function! s:CheckIfNotify()
+    if !s:enabled
+        return
+    endif
+
     " Bail if not enough lines have been changed
     let lines_changed = s:GetLinesChanged()
     if lines_changed < g:committed_lines_threshold
@@ -65,8 +75,8 @@ function! s:CheckIfNotify()
     let minutes_since_last_commit = seconds_since_last_commit / 60
     let hours_since_last_commit = minutes_since_last_commit / 60
 
-    " echom "thresh: " . s:thresholds[repo_path]
-    " echom "minutes since: " . minutes_since_last_commit
+    echom "thresh: " . s:thresholds[repo_path]
+    echom "minutes since: " . minutes_since_last_commit
 
     " If this matches, there must be a new commit.
     if minutes_since_last_commit < (s:thresholds[repo_path] / 2)
@@ -100,3 +110,15 @@ augroup CommittedCheck
   autocmd!
   autocmd BufWritePost * silent call s:CheckIfNotify()
 augroup END
+
+function! s:SetCommitted(value)
+    let s:enabled = a:value
+endfunction
+
+function! s:ToggleCommitted()
+    let s:enabled = !s:enabled
+endfunction
+
+command CommittedDisable call <SID>SetCommitted(0)
+command CommittedEnable call <SID>SetCommitted(1)
+command CommittedToggle call <SID>ToggleCommitted()

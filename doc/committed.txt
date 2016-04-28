@@ -9,9 +9,10 @@ INTRODUCTION                                                         *committed*
 
 1. Description                                  |committed-description|
 2. Installation and Updating                    |committed-install|
-3. User Configuration                           |committed-configuration|
-4. Known Issues                                 |committed-issues|
-5. Bug Reports                                  |committed-bugs|
+3. Commands                                     |committed-commands|
+4. User Configuration                           |committed-configuration|
+5. Known Issues                                 |committed-issues|
+6. Bug Reports                                  |committed-bugs|
 
 ==============================================================================
 1. Description                                          *committed-description*
@@ -42,7 +43,16 @@ Using [Pathogen](https://github.com/tpope/vim-pathogen):
     git clone git://github.com/ChrisPenner/vim-committed.git
 
 =============================================================================
-3. User Configuration                                 *committed-configuration*
+3. Commands                                                *committed-commands*
+
+Use the following commands to enable/disable/toggle the plugin.
+
+    :CommittedDisable                                      *:CommittedDisable*
+    :CommittedEnable                                       *:CommittedEnable*
+    :CommittedToggle                                       *:CommittedToggle*
+
+=============================================================================
+4. User Configuration                                 *committed-configuration*
 
 There are a few configurable parameters to tune operation to your needs.
 
@@ -58,8 +68,11 @@ Here's the default configuration:
   " have been changed.
   let g:committed_lines_threshold = 15
 
+  " Enable the plugin automatically at startup.
+  let g:committed_enable_at_startup = 1
+
 =============================================================================
-4. Known Issues                                              *committed-issues*
+5. Known Issues                                              *committed-issues*
 
 Due to how applescript works within tmux, if running vim within tmux you may
 need to install an additional tool. With homebrew you can run:
@@ -67,7 +80,7 @@ need to install an additional tool. With homebrew you can run:
   brew install reattach-to-user-namespace
 
 =============================================================================
-5. Bug Reports                                                 *committed-bugs*
+6. Bug Reports                                                 *committed-bugs*
 
 Please report any bugs encountered as issues on Github here:
     https://github.com/chrispenner/vim-committed/issues
