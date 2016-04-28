@@ -12,7 +12,7 @@ Committed will run a check each time you write a buffer.
 ## Installation
 
 Committed may be installed directly from Github. It's recommended to use a
-plugin manager.
+plugin manager. Committed requires OSX.
 
 Using [Vim-Plug](https://github.com/junegunn/vim-plug)
 
