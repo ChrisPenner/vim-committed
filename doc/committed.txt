@@ -5,9 +5,6 @@ license: MIT
 
                         Committed: remember to commit
 
-Known issues:
-http://apple.stackexchange.com/questions/174779/unable-to-run-display-notification-using-osascript-in-a-tmux-session
-
 INTRODUCTION                                                         *committed*
 
 1. Description                                  |committed-description|
@@ -21,9 +18,9 @@ INTRODUCTION                                                         *committed*
 
 Committed is a simple vim plugin that will send you a Mac OSX desktop
 notification if you haven't committed your code within a certain amount of
-time. See the section on configuration to choose your threshold settings. To
-keep from being annoying, consecutive reminder messages are shown with an
-exponential backoff.
+time. To keep from being annoying, consecutive reminder messages are shown with
+an exponential backoff. See the section on configuration to choose your
+threshold settings.
 
 =============================================================================
 2. Installation                                             *committed-install*
