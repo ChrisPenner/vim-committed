@@ -81,7 +81,7 @@ function! s:CheckIfNotify()
     " If this matches, there must be a new commit.
     if minutes_since_last_commit < (s:thresholds[repo_path] / 2)
         let s:thresholds[repo_path] = g:committed_time_threshold
-        if minutes_since_last_commit < threshold
+        if minutes_since_last_commit < s:thresholds[repo_path]
             return
         else
             while minutes_since_last_commit >= s:thresholds[repo_path]
