@@ -5,6 +5,8 @@ time. To keep from being annoying, consecutive reminder messages are shown with
 an exponential backoff. See the section on configuration to choose your
 threshold settings.
 
+Committed will run a check each time you write a buffer.
+
 ![Committed Example Image](/doc/committed.png)
 
 ## Installation
