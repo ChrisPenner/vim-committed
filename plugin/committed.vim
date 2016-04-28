@@ -27,7 +27,6 @@ function! s:Notify(message)
     else
         let command='! osascript -e ''display notification "' . a:message . '" with title "Commit\!"'''
     endif
-    exe command
 endfunction
 
 " Determine whether to send a notification for the current repo
@@ -79,4 +78,4 @@ augroup CommittedCheck
   autocmd BufWritePost * call s:CheckIfNotify()
 augroup END
 
-call s:CheckIfNotify()
+silent call s:CheckIfNotify()
